@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Buon Compleanno Ester ❤️</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  background: linear-gradient(135deg, #ff9a9e, #fad0c4, #a18cd1);
+  background-size: 300% 300%;
+  animation: bgMove 12s ease infinite;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  overflow: hidden;
+}
+
+@keyframes bgMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.center { position: absolute; text-align: center; }
+
+#text { font-size: 2em; transition: opacity 1s; }
+
+.photo {
+  position: absolute;
+  max-width: 90vw;
+  max-height: 80vh;
+  object-fit: contain;
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+  opacity: 0;
+  transform: scale(0.9);
+  transition: all 1.5s ease;
+}
+.photo.show { opacity: 1; transform: scale(1); }
+
+#final {
+  max-width: 700px;
+  text-align: center;
+  font-size: 1.3em;
+  line-height: 1.6;
+  opacity: 0;
+  position: absolute;
+  z-index: 10;
+}
+
+/* background side images */
+.bg-side {
+  position: fixed;
+  top: 0;
+  width: 50vw;
+  height: 100vh;
+  object-fit: cover;
+  opacity: 0.25;
+  z-index: 1;
+}
+
+.left { left: 0; }
+.right { right: 0; transform: scaleX(-1); }
+
+/* typing caret */
+.caret {
+  border-right: 2px solid white;
+  padding-right: 3px;
+  animation: blink 1s infinite;
+}
+@keyframes blink {
+  0%,50%,100%{opacity:1}
+  25%,75%{opacity:0}
+}
+
+/* floating emojis */
+.emoji {
+  position: absolute;
+  font-size: 18px;
+  opacity: 0.5;
+  animation: float 8s linear infinite;
+}
+@keyframes float {
+  0% { transform: translateY(100vh) translateX(0); }
+  100% { transform: translateY(-10vh) translateX(20px); }
+}
+</style>
+</head>
+
+<body>
+
+<div id="text" class="center">Caricamento...</div>
+<div id="final"></div>
+
+<audio id="music" loop>
+  <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+
+const photos = [
+  "IMG-20260413-WA0085.jpg",
+  "20260406_214558.jpg",
+  "20260407_002532.jpg",
+  "20260406_194223(0).jpg",
+  "20260407_000451.jpg",
+  "IMG-20260405-WA0071.jpg"
+];
+
+let count = 3;
+const text = document.getElementById("text");
+const music = document.getElementById("music");
+
+const interval = setInterval(() => {
+  count--;
+  text.innerText = count;
+
+  if (count === 0) {
+    clearInterval(interval);
+    start();
+  }
+}, 1000);
+
+function start() {
+  text.innerText = "😂 SCHERZAVO 😂";
+  setTimeout(() => text.style.opacity = 0, 1000);
+  setTimeout(showSequence, 2000);
+}
+
+function showSequence() {
+  let i = 0;
+
+  function nextPhoto() {
+    if (i >= photos.length) {
+      showFinal();
+      return;
+    }
+
+    const img = document.createElement("img");
+    img.src = photos[i];
+    img.className = "photo";
+
+    document.body.appendChild(img);
+
+    setTimeout(() => img.classList.add("show"), 100);
+
+    if (i > 0) {
+      const prev = document.querySelectorAll(".photo")[0];
+      prev.style.opacity = 0;
+      setTimeout(() => prev.remove(), 1500);
+    }
+
+    i++;
+    setTimeout(nextPhoto, 1800);
+  }
+
+  nextPhoto();
+}
+
+function showFinal() {
+  document.querySelectorAll(".photo").forEach(img => img.remove());
+
+  // background side images
+  const left = document.createElement("img");
+  left.src = "IMG-20260408-WA0035.jpg";
+  left.className = "bg-side left";
+
+  const right = document.createElement("img");
+  right.src = "IMG-20260408-WA0035.jpg";
+  right.className = "bg-side right";
+
+  document.body.appendChild(left);
+  document.body.appendChild(right);
+
+  music.volume = 0.5;
+  music.play().catch(()=>{});
+
+  const finalText = document.getElementById("final");
+
+  const message = `Davvero pensavi che ti avrei scritto un banale messaggio di auguri? Sei la solita stupida!!
+
+Ma è per questo che voglio condividere tutto con te, dalla cosa più banale all'emozione più forte che si possa provare.
+
+Buon compleanno bimba, non cambiare mai. T vgl bnssm ❤️`;
+
+  let i = 0;
+  finalText.style.opacity = 1;
+
+  function type() {
+    if (i < message.length) {
+      finalText.innerHTML = message.substring(0, i) + '<span class="caret"></span>';
+      i++;
+      setTimeout(type, 30);
+    } else {
+      finalText.innerHTML = message;
+      spawnEmojis();
+    }
+  }
+
+  type();
+}
+
+function spawnEmojis() {
+  setInterval(() => {
+    const e = document.createElement("div");
+    e.className = "emoji";
+    e.innerText = Math.random() > 0.5 ? "🐶" : "❤️";
+    e.style.left = Math.random() * 100 + "vw";
+    document.body.appendChild(e);
+    setTimeout(()=>e.remove(), 8000);
+  }, 800);
+}
+
+</script>
+
+</body>
+</html>
